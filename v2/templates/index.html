@@ -1,63 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Time Table Generator with Classrooms</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-</head>
-<body>
+    <title>TTG v2</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
     <div class="container">
-        <h1>Time Table Generator2</h1>
+      <h1>Time Table Generator 2</h1>
 
-        <form method="post">
-            <label>Select Days:</label><br />
-            {% for day in days_options %}
-                <input type="checkbox" name="days" value="{{day}}" id="{{day}}" 
-                {% if timetable and day in timetable %}checked{% endif %} />
-                <label for="{{day}}">{{day}}</label>
-            {% endfor %}
-            <br /><br />
-
-            <label>Number of Time Slots per Day:</label><br />
-            <input type="number" name="slots" min="1" max="10" value="{{request.form.get('slots', '')}}" required /><br /><br />
-
-            <label>Number of Classrooms:</label><br />
-            <input type="number" name="classrooms" min="1" max="10" value="{{classrooms or ''}}" required /><br /><br />
-
-            <label>Enter Subjects (comma separated):</label><br />
-            <input type="text" name="subjects" placeholder="Math,Physics,Chemistry,English" value="{{request.form.get('subjects', '')}}" required /><br /><br />
-
-            <button type="submit">Generate Time Table</button>
-        </form>
-
-        {% if timetable %}
-        <h2>Generated Time Table</h2>
-
-        {% for day, class_dict in timetable.items() %}
-            <h3>{{day}}</h3>
-            {% for classroom, slots in class_dict.items() %}
-                <h4>{{classroom}}</h4>
-                <table>
-                    <thead>
-                        <tr>
-                            {% for i in range(slots|length) %}
-                                <th>Slot {{ i + 1 }}</th>
-                            {% endfor %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            {% for subject in slots %}
-                                <td>{{ subject }}</td>
-                            {% endfor %}
-                        </tr>
-                    </tbody>
-                </table>
-                <br />
-            {% endfor %}
+      <form method="post">
+        <label>Select Days:</label><br />
+        {% for day in days_options %}
+        <input
+          type="checkbox"
+          name="days"
+          value="{{day}}"
+          id="{{day}}"
+          {%
+          if
+          timetable
+          and
+          day
+          in
+          timetable
+          %}checked{%
+          endif
+          %}
+        />
+        <label for="{{day}}">{{day}}</label>
         {% endfor %}
-        {% endif %}
+        <br /><br />
+
+        <label>Number of Time replace per Day:</label><br />
+        <input
+          type="number"
+          name="replace"
+          min="1"
+          max="10"
+          value="{{request.form.get('replace', '')}}"
+          required
+        /><br /><br />
+
+        <label>Number of Classrooms:</label><br />
+        <input
+          type="number"
+          name="classrooms"
+          min="1"
+          max="10"
+          value="{{classrooms or ''}}"
+          required
+        /><br /><br />
+
+        <label>Enter Subjects (comma separated):</label><br />
+        <input
+          type="text"
+          name="subjects"
+          placeholder="Math,Physics,Chemistry,English"
+          value="{{request.form.get('subjects', '')}}"
+          required
+        /><br /><br />
+
+        <button type="submit">Generate Time Table</button>
+      </form>
+
+      {% if timetable %}
+      <h2>Generated Time Table</h2>
+
+      {% for day, class_dict in timetable.items() %}
+      <h3>{{day}}</h3>
+      {% for classroom, replace in class_dict.items() %}
+      <h4>{{classroom}}</h4>
+      <table>
+        <thead>
+          <tr>
+            {% for i in range(replace|length) %}
+            <th>Slot {{ i + 1 }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for subject in replace %}
+            <td>{{ subject }}</td>
+            {% endfor %}
+          </tr>
+        </tbody>
+      </table>
+      <br />
+      {% endfor %} {% endfor %} {% endif %}
     </div>
-</body>
+  </body>
 </html>

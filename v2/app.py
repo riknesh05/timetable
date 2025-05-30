@@ -8,7 +8,7 @@ def index():
     classrooms = 0
     if request.method == 'POST':
         days = request.form.getlist('days')
-        slots = int(request.form.get('slots'))
+        replace = int(request.form.get('replace'))
         subjects = request.form.get('subjects').strip().split(',')
         classrooms = int(request.form.get('classrooms'))
 
@@ -19,7 +19,7 @@ def index():
             timetable[day] = {}
             for cr in range(1, classrooms + 1):
                 timetable[day][f'Classroom {cr}'] = []
-                for slot in range(slots):
+                for slot in range(replace):
                     timetable[day][f'Classroom {cr}'].append(subjects[sub_index % len(subjects)].strip())
                     sub_index += 1
 

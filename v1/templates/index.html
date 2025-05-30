@@ -1,55 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Time Table Generator</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-</head>
-<body>
+    <title>TTG v1</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
     <div class="container">
-        <h1>Time Table Generator</h1>
+      <h1>Time Table Generator v1</h1>
 
-        <form method="post">
-            <label>Select Days:</label><br />
-            {% for day in days_options %}
-                <input type="checkbox" name="days" value="{{day}}" id="{{day}}"/>
-                <label for="{{day}}">{{day}}</label>
+      <form method="post">
+        <label>Select Days:</label><br />
+        {% for day in days_options %}
+        <input type="checkbox" name="days" value="{{day}}" id="{{day}}" />
+        <label for="{{day}}">{{day}}</label>
+        {% endfor %}
+        <br /><br />
+
+        <label>Number of Periods per Day:</label><br />
+        <input
+          type="number"
+          name="periods"
+          min="1"
+          max="10"
+          placeholder="Max 10"
+          required
+        /><br /><br />
+
+        <label>Enter Subjects (comma separated):</label><br />
+        <input
+          type="text"
+          name="subjects"
+          placeholder="Math,Physics,Chemistry,English"
+          required
+        /><br /><br />
+
+        <button type="submit">Generate Time Table</button>
+      </form>
+
+      {% if timetable %}
+      <h2>Generated Time Table</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Day</th>
+            {% for i in range(timetable[days_options[0]]|length) %}
+            <th>Slot {{i+1}}</th>
             {% endfor %}
-            <br /><br />
-
-            <label>Number of Time Slots per Day:</label><br />
-            <input type="number" name="slots" min="1" max="10" required /><br /><br />
-
-            <label>Enter Subjects (comma separated):</label><br />
-            <input type="text" name="subjects" placeholder="Math,Physics,Chemistry,English" required /><br /><br />
-
-            <button type="submit">Generate Time Table</button>
-        </form>
-
-        {% if timetable %}
-        <h2>Generated Time Table</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Day</th>
-                    {% for i in range(timetable[days_options[0]]|length) %}
-                        <th>Slot {{i+1}}</th>
-                    {% endfor %}
-                </tr>
-            </thead>
-            <tbody>
-                {% for day, slots in timetable.items() %}
-                    <tr>
-                        <td>{{day}}</td>
-                        {% for subject in slots %}
-                            <td>{{subject}}</td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% endif %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for day, replace in timetable.items() %}
+          <tr>
+            <td>{{day}}</td>
+            {% for subject in replace %}
+            <td>{{subject}}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
     </div>
-</body>
+  </body>
 </html>

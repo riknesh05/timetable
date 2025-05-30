@@ -9,11 +9,11 @@ def index():
     timetable = None
     classrooms = 0
     days_options = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
-    slots = 0
+    replace = 0
 
     if request.method == 'POST':
         days = request.form.getlist('days')
-        slots = int(request.form.get('slots'))
+        replace = int(request.form.get('replace'))
         subjects = request.form.get('subjects').strip().split(',')
         classrooms = int(request.form.get('classrooms'))
 
@@ -23,11 +23,11 @@ def index():
             timetable[day] = {}
             for cr in range(1, classrooms + 1):
                 timetable[day][f'Classroom {cr}'] = []
-                for slot in range(slots):
+                for slot in range(replace):
                     timetable[day][f'Classroom {cr}'].append(subjects[sub_index % len(subjects)].strip())
                     sub_index += 1
 
-    return render_template('index.html', timetable=timetable, days_options=days_options, classrooms=classrooms, slots=slots)
+    return render_template('index.html', timetable=timetable, days_options=days_options, classrooms=classrooms, replace=replace)
 
 @app.route('/download/xlsx', methods=['POST'])
 def download_xlsx():
@@ -49,7 +49,7 @@ def download_xlsx():
         classrooms = list(timetable[day].keys())
         break  # get classrooms from first day only
 
-    # Write days, classrooms, and slots horizontally
+    # Write days, classrooms, and replace horizontally
     # Format: Day | Classroom 1 Slot 1 | Classroom 1 Slot 2 | ... | Classroom 2 Slot 1 | ...
     header = ['Day']
     slot_count = 0

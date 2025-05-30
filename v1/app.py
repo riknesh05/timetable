@@ -8,7 +8,7 @@ def index():
     if request.method == 'POST':
         # Get form data
         days = request.form.getlist('days')
-        slots = int(request.form.get('slots'))
+        replace = int(request.form.get('periods'))
         subjects = request.form.get('subjects').strip().split(',')
 
         # Simple timetable generation logic: assign subjects in round robin fashion
@@ -16,7 +16,7 @@ def index():
         sub_index = 0
         for day in days:
             timetable[day] = []
-            for slot in range(slots):
+            for slot in range(replace):
                 timetable[day].append(subjects[sub_index % len(subjects)].strip())
                 sub_index += 1
 
