@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Time Table Generator with Classrooms</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Time Table Generator</h1>
+
+        <form method="post" id="generate-form">
+            <label>Select Days:</label><br />
+            {% for day in days_options %}
+                <input type="checkbox" name="days" value="{{day}}" id="{{day}}" 
+                {% if timetable and day in timetable %}checked{% endif %} />
+                <label for="{{day}}">{{day}}</label>
+            {% endfor %}
+            <br /><br />
+
+            <label>Number of Time Slots per Day:</label><br />
+            <input type="number" name="slots" min="1" max="10" value="{{slots or ''}}" required /><br /><br />
+
+            <label>Number of Classrooms:</label><br />
+            <input type="number" name="classrooms" min="1" max="10" value="{{classrooms or ''}}" required /><br /><br />
+
+            <label>Enter Subjects (comma separated):</label><br />
+            <input type="text" name="subjects" placeholder="Math,Physics,Chemistry,English" value="{{request.form.get('subjects', '')}}" required /><br /><br />
+
+            <button type="submit">Generate Time Table</button>
+        </form>
+
+        {% if timetable %}
+        <h2>Generated Time Table</h2>
+
+        <div style="text-align:center; margin-bottom: 15px;">
+            <button onclick="window.print()">Print / Save as PDF</button>
+            <button id="download-xlsx">Download as XLSX</button>
+        </div>
+
+        {% for day, class_dict in timetable.items() %}
+            <h3>{{day}}</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Slot</th>
+                        {% for classroom in class_dict.keys() %}
+                            <th colspan="1">{{ classroom }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for slot_index in range(slots) %}
+                        <tr>
+                            <td>Slot {{ slot_index + 1 }}</td>
+                            {% for classroom, slots_list in class_dict.items() %}
+                                <td>{{ slots_list[slot_index] }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <br />
+        {% endfor %}
+        {% endif %}
+    </div>
+
+<script>
+    $('#download-xlsx').click(function() {
+        // Serialize timetable object to JSON string
+        const timetableData = {{ timetable | tojson }};
+        const form = $('<form method="POST" action="/download/xlsx"></form>');
+        const input = $('<input type="hidden" name="timetable_data" />').val(JSON.stringify(timetableData));
+        form.append(input);
+        $('body').append(form);
+        form.submit();
+        form.remove();
+    });
+</script>
+
+</body>
+</html>
