@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Staff Management</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <div class="container">
+    <h1>Staff Entry Form</h1>
+
+    <form action="{{ url_for('add_staff') }}" method="POST">
+      <label>Staff Name:</label><br />
+      <input type="text" name="name" required /><br /><br />
+
+      <label>Select Subjects:</label><br />
+      <input type="checkbox" name="subjects" value="OS" /> OS<br />
+      <input type="checkbox" name="subjects" value="Cloud Computing" /> Cloud Computing<br />
+      <input type="checkbox" name="subjects" value="Web Tech" /> Web Tech<br />
+      <input type="checkbox" name="subjects" value="Python Lab" /> Python Lab<br /><br />
+
+      <label>Select Departments/Years:</label><br />
+      <input type="checkbox" name="departments" value="CSE 2nd" /> CSE 2nd<br />
+      <input type="checkbox" name="departments" value="ECE 1st" /> ECE 1st<br />
+      <input type="checkbox" name="departments" value="IT 4th" /> IT 4th<br /><br />
+
+      <button type="submit">Add Staff</button>
+    </form>
+
+    <hr />
+
+    <h2>Staff List</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Subjects</th>
+          <th>Departments</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for staff in staff %}
+        <tr>
+          <td>{{ staff.id }}</td>
+          <td>{{ staff.name }}</td>
+          <td>{{ staff.subjects | join(', ') }}</td>
+          <td>{{ staff.departments | join(', ') }}</td>
+          <td><a href="{{ url_for('delete_staff', staff_id=staff.id) }}" onclick="return confirm('Delete staff {{ staff.name }}?')">Delete</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <p><a href="{{ url_for('timetable_page') }}">Go to Timetable Generator</a></p>
+  </div>
+</body>
+</html>

@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Staff Management{% endblock %}
+{% block content %}
+<h1>Staff Management</h1>
+<form method="post" action="{{ url_for('add_staff') }}" class="mb-4" id="staff-form">
+    <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input type="text" name="name" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Departments</label><br>
+        {% for dept in departments %}
+            <div class="form-check form-check-inline">
+                <input class="form-check-input dept-checkbox" type="checkbox" name="departments" value="{{ dept }}" id="dept-{{ loop.index }}">
+                <label class="form-check-label" for="dept-{{ loop.index }}">{{ dept }}</label>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Subjects (select from below)</label>
+        <select multiple name="subjects" id="subjects-select" class="form-select" size="6" required>
+            <!-- Options populated dynamically -->
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Add Staff</button>
+</form>
+
+<h2>Existing Staff</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr><th>ID</th><th>Name</th><th>Subjects</th><th>Departments</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+    {% for s in staff %}
+        <tr>
+            <td>{{ s.id }}</td>
+            <td>{{ s.name }}</td>
+            <td>{{ s.subjects | join(', ') }}</td>
+            <td>{{ s.departments | join(', ') }}</td>
+            <td>
+                <a class="btn btn-sm btn-secondary" href="{{ url_for('edit_staff', staff_id=s.id) }}">Edit</a>
+                <a class="btn btn-sm btn-danger" href="{{ url_for('delete_staff', staff_id=s.id) }}" onclick="return confirm('Are you sure?')">Delete</a>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<script>
+const subjectsByDept = {{ subjects_by_dept|tojson }};
+
+function updateSubjects() {
+    const selectedDepts = Array.from(document.querySelectorAll('.dept-checkbox:checked')).map(cb => cb.value);
+    const subjectsSet = new Set();
+
+    selectedDepts.forEach(dept => {
+        const subs = subjectsByDept[dept];
+        if(subs) {
+            subs.forEach(s => subjectsSet.add(s));
+        }
+    });
+
+    const subjectsSelect = document.getElementById('subjects-select');
+    subjectsSelect.innerHTML = ''; // clear previous
+
+    // Populate subjects select options
+    Array.from(subjectsSet).sort().forEach(subj => {
+        const option = document.createElement('option');
+        option.value = subj;
+        option.textContent = subj;
+        subjectsSelect.appendChild(option);
+    });
+}
+
+// Update subjects when department checkboxes change
+document.querySelectorAll('.dept-checkbox').forEach(cb => {
+    cb.addEventListener('change', updateSubjects);
+});
+
+// Optional: on page load, run updateSubjects
+updateSubjects();
+</script>
+{% endblock %}

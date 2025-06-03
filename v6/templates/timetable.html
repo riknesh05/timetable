@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Timetable Generator</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+  <div class="container">
+    <h1>Timetable Generator</h1>
+
+    <form method="POST" id="timetable-form">
+      <label>Select Days:</label><br />
+      {% for day in days_options %}
+      <input type="checkbox" name="days" value="{{ day }}" id="{{ day }}" checked />
+      <label for="{{ day }}">{{ day }}</label>
+      {% endfor %}
+      <br /><br />
+
+      <label>Number of Periods per Day:</label><br />
+      <input type="number" name="periods" min="1" max="10" value="{{ periods }}" required /><br /><br />
+
+      <button type="submit">Generate Timetable</button>
+    </form>
+
+    {% if timetable %}
+    <h2>Generated Timetable</h2>
+    <div style="margin-bottom: 15px;">
+      <button id="download-xlsx">Download Timetable as XLSX</button>
+    </div>
+
+    {% for dept, days in timetable.items() %}
+    <h3>{{ dept }}</h3>
+    <table>
+      <thead>
+        <tr>
+          <th>Day</th>
+          {% for p in range(periods) %}
+          <th>Period {{ p + 1 }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for day, periods_list in days.items() %}
+        <tr>
+          <td>{{ day }}</td>
+          {% for subject in periods_list %}
+          <td>{{ subject }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <br />
+    {% endfor %}
+    {% endif %}
+
+    <p><a href="{{ url_for('staff_page') }}">Back to Staff Management</a></p>
+  </div>
+
+  <script>
+    $('#download-xlsx').click(function () {
+      const timetableData = {{ timetable|tojson }};
+      const form = $('<form method="POST" action="{{ url_for('download_timetable') }}"></form>');
+      const input = $('<input type="hidden" name="timetable_json" />').val(JSON.stringify(timetableData));
+      form.append(input);
+      $('body').append(form);
+      form.submit();
+      form.remove();
+    });
+  </script>
+</body>
+</html>

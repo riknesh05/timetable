@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Edit Staff{% endblock %}
+{% block content %}
+<h1>Edit Staff - {{ staff.name }}</h1>
+<form method="post" id="edit-staff-form">
+    <div class="mb-3">
+        <label class="form-label">Name</label>
+        <input type="text" name="name" value="{{ staff.name }}" class="form-control" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Departments</label><br>
+        {% for dept in departments %}
+            <div class="form-check form-check-inline">
+                <input class="form-check-input dept-checkbox" type="checkbox" name="departments" value="{{ dept }}" id="dept-{{ loop.index }}"
+                {% if dept in staff.departments %}checked{% endif %}>
+                <label class="form-check-label" for="dept-{{ loop.index }}">{{ dept }}</label>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Subjects (select from below)</label>
+        <select multiple name="subjects" id="subjects-select" class="form-select" size="6" required>
+            <!-- Options populated dynamically -->
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Update</button>
+</form>
+<a href="{{ url_for('staff_page') }}" class="btn btn-link">Back</a>
+
+<script>
+const subjectsByDept = {{ subjects_by_dept|tojson }};
+const preSelectedSubjects = {{ staff.subjects|tojson }};
+
+function updateSubjects() {
+    const selectedDepts = Array.from(document.querySelectorAll('.dept-checkbox:checked')).map(cb => cb.value);
+    const subjectsSet = new Set();
+
+    selectedDepts.forEach(dept => {
+        const subs = subjectsByDept[dept];
+        if(subs) {
+            subs.forEach(s => subjectsSet.add(s));
+        }
+    });
+
+    const subjectsSelect = document.getElementById('subjects-select');
+    subjectsSelect.innerHTML = '';
+
+    Array.from(subjectsSet).sort().forEach(subj => {
+        const option = document.createElement('option');
+        option.value = subj;
+        option.textContent = subj;
+        if(preSelectedSubjects.includes(subj)) {
+            option.selected = true;
+        }
+        subjectsSelect.appendChild(option);
+    });
+}
+
+// Update subjects when departments change
+document.querySelectorAll('.dept-checkbox').forEach(cb => {
+    cb.addEventListener('change', updateSubjects);
+});
+
+// On page load populate subjects
+updateSubjects();
+</script>
+{% endblock %}

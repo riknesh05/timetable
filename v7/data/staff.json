@@ -1,0 +1,27 @@
+[
+  {
+    "id": "S001",
+    "name": "ravi",
+    "subjects": [
+      "OS",
+      "Cloud Computing"
+    ],
+    "departments": [
+      "CSE 2nd",
+      "ECE 1st",
+      "IT 4th"
+    ]
+  },
+  {
+    "id": "S002",
+    "name": "kavi",
+    "subjects": [
+      "Cloud Computing",
+      "Python Lab"
+    ],
+    "departments": [
+      "CSE 2nd",
+      "ECE 1st"
+    ]
+  }
+]
